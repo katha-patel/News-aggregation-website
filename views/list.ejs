@@ -1,0 +1,503 @@
+<html>
+<head>
+	<title>Power Read</title>
+
+  <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<style type="text/css">
+		body{
+  font-family: 'Nimbus Sans L',sans-serif;
+  color: #242323;
+  background: #F4F7F9;
+  /*color: #999;*/
+}
+.card{
+    /border-radius: 4px;/
+    width: 100%;
+    height: 23rem;
+    background: #fff;
+    box-shadow: 0 6px 10px rgba(0,0,0,.08), 0 0 6px rgba(0,0,0,.05);
+      transition: .3s transform cubic-bezier(.155,1.105,.295,1.12),.3s box-shadow,.3s -webkit-transform cubic-bezier(.155,1.105,.295,1.12);
+  /*padding: 14px 36px 18px 36px;*/
+  cursor: pointer;
+}
+
+.card:hover{
+     transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12), 0 4px 8px rgba(0,0,0,.06);
+}
+
+.card h3{
+  font-weight: 600;
+}
+
+ img{
+  
+  width: 100%;
+  top: 20px;
+ max-height: 12rem;
+  padding-bottom: 20px;
+}
+
+.cb-btn:checked + label {
+  color: #F4F7F9;
+  background-color: #293266;
+}
+
+
+@media(max-width: 990px){
+  .card{
+    margin: 20px;
+  }
+} 
+
+.cardCollapsible {
+    margin-top: 20px;
+    width: auto;
+    height: 100px;
+    display: table;
+}
+
+.paragraphStyling {
+    vertical-align: middle;
+    display: table-cell;
+}
+
+.card-read-more {
+  height: 2rem;
+  text-align: center;
+
+  background-color: #009cc3;
+  border-top: 1px solid #D4D4D4;
+}
+.card-read-more a {
+  text-decoration: none !important;
+}
+.cen{
+  
+  color: white;
+}
+
+.btn{
+
+z-index: 1;
+position: relative;
+
+margin-bottom: 30px;
+text-align: center;
+color: #ffffff;
+background-color: #009cc3;
+
+font-size: 16px;
+
+transition: color 0.5s;
+cursor: pointer;
+border-radius:30px;
+}
+
+.but {
+
+
+padding: 10px;
+background: #2196F3;
+color: white;
+
+border: 1px solid grey;
+border-left: none; /* font-size: 17px; width: 20%;Prevent double borders */
+cursor: pointer;
+}
+
+
+
+
+a,
+a:hover,
+a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.navbar {
+    padding: 15px 10px;
+    background: #fff;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 40px;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed #ddd;
+    margin: 40px 0;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    
+}
+
+#sidebar {
+  position: sticky;
+    min-width: 250px;
+    max-width: 250px;
+    background: #293266;
+    color: #F4F7F9;
+    transition: all 0.3s;
+    
+}
+
+#sidebar.active {
+    margin-left: -250px;
+}
+
+#sidebar .sidebar-header {
+    padding: 20px;
+    background: #293266;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+    border-bottom: 1px solid #293266;
+}
+
+#sidebar ul p {
+    color: #F4F7F9;
+    padding: 10px;
+}
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+
+#sidebar ul li a:hover {
+    color: #293266;
+    background: #F4F7F9;
+}
+
+#sidebar ul li.active>a,
+a[aria-expanded="true"] {
+    color: #F4F7F9;
+    background: #293266;
+}
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: #293266;
+}
+
+
+
+
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+
+#content {
+    width: 100%;
+    padding: 20px;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+    #sidebarCollapse span {
+        display: none;
+    }
+}
+#myImg {
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#myImg:hover {opacity: 0.7;}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+}
+
+/* Modal Content (image) */
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 60%;
+  height: 100%;
+  max-width: 600px;
+  max-height: 500px;
+}
+
+/* Caption of Modal Image */
+#caption {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+  text-align: center;
+  color: #ccc;
+  padding: 10px 0;
+  height: 150px;
+}
+
+/* Add Animation */
+.modal-content, #caption {  
+  -webkit-animation-name: zoom;
+  -webkit-animation-duration: 0.6s;
+  animation-name: zoom;
+  animation-duration: 0.6s;
+}
+
+@-webkit-keyframes zoom {
+  from {-webkit-transform:scale(0)} 
+  to {-webkit-transform:scale(1)}
+}
+
+@keyframes zoom {
+  from {transform:scale(0)} 
+  to {transform:scale(1)}
+}
+
+/* The Close Button */
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover,
+.close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px){
+  .modal-content {
+    width: 100%;
+  }
+}
+	</style>
+</head>
+<body>
+  <div class="wrapper">
+    
+    <nav id="sidebar">
+      <div class="sidebar-header">
+          <h3>Bolstart</h3>
+      </div>
+
+      <ul class="list-unstyled components">
+          <p>Power Read</p>
+          
+          <li class="active">
+            
+              <a href="#">General News</a>
+          </li>
+          
+          <li>
+              <a href="/home/foryou">For You</a>
+          </li>
+          <li>
+              <a href="/home/bookmark">Bookmark</a>
+          </li>
+      </ul>
+
+     
+  </nav>
+
+
+  <div id="content">
+     
+    <nav class="navbar navbar-expand-lg navbar-light">
+
+
+<br>
+<div id="navbar-right">
+<form action="/home" method="post" id="foo">
+<input type="checkbox" id="cb1" name="category"  value="Small_Business" hidden class="cb-btn"><label class="btn" for="cb1" >Small Business</label>
+<input type="checkbox" id="cb2" name="category"  value="Financial_Services" hidden class="cb-btn"><label class="btn" for="cb2" >Finance Services</label>
+<input type="checkbox" id="cb3" name="category"  value="Marketing_and_Advertising" hidden class="cb-btn"><label class="btn" for="cb3">Marketing and Advertising</label>
+<input type="checkbox" id="cb4" name="category"  value="Agriculture_and_Forestry" hidden class="cb-btn"><label class="btn" for="cb4">Agriculture and Forestry</label>
+<input type="checkbox" id="cb5" name="category"  value="Investing" hidden class="cb-btn"><label class="btn" for="cb5">Investing</label>
+<input type="checkbox" id="cb6" name="category"  value="Business_Services" hidden class="cb-btn"><label class="btn" for="cb6">Business Services</label>
+<input type="checkbox" id="cb7" name="category"  value="Aerospace_and_Defense" hidden class="cb-btn"><label class="btn" for="cb7">Aerospace and Defense</label>
+<input type="checkbox" id="cb8" name="category"  value="Human_Resources" hidden class="cb-btn"><label class="btn" for="cb8">Human Resources</label>
+<button type="submit" class="btn"><i class="fa fa-search"></i></button>
+</form>
+</div>
+</nav>
+<div class="container">
+  
+  <br>
+  <br>
+    <% for( let i=0; i<listitem.length;i++){ %>
+    <div class="row">
+     
+      <div class="col-lg-1">
+      </div>
+      <div class="col-lg-10">
+       
+  
+        <div class="card lg-3 cardCollapsible">
+          <div  class="paragraphStyling">
+          
+          <h4 onclick="bookMark(<%=listitem[i].uri%>);" style="padding: 10px 36px 10px 36px;" id="<%= listitem[i].uri %>"><b><%= listitem[i].title %></b></h4>
+          <div class="row g-0" >
+            <div class="col-lg-5 " style="padding: 0px 36px 0px 36px;" >
+                <br>
+                <img onclick="fun('<%= listitem[i].image %>')" id="myImg" src="<%= listitem[i].image %>" alt="img" onerror="if (this.src != 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg') this.src = 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg';" >
+            </div>
+  
+  
+  <div class="col-lg-7" style="max-width: 540px; " style="padding: 0px  36px 0px 36px;">
+              <div class="card-body">
+               <!-- <h4 class="card-title"><b><%= listitem[i].title %></b></h4> -->
+                <p class="card-text text-muted"><small class="text-muted"><%= listitem[i].time %> | <%= listitem[i].date %></small></p>
+                <p class="card-text"  id="<%= listitem[i].uri %>https"><%= listitem[i].summary %></p>
+                <script> var k= "<%= listitem[i].summary %>";
+                  truncateText( 60,<%=listitem[i].uri%>, k) 
+                  function truncateText( maxLength,id,text) {
+                      //var element = document.getElementById(id),
+                          truncated = text;
+                          console.log(truncated)
+                      
+                          str = truncated.split(" ").splice(0,maxLength).join(" ");
+                          document.getElementById(id+"https").innerHTML=str+'...<a href="<%= listitem[i].url %>" target="_blank">Read More</a>';
+                        
+                    // return str;
+                  }
+                  </script>
+                 
+               
+              </div>
+            </div>
+          </div>
+  
+  
+           <div class="card-read-more">
+              <a href="<%= listitem[i].url %>" target="_blank" class="btn-link  cen">
+                    READ MORE
+              </a>
+          </div>
+  
+        </div>
+  
+  
+        </div>
+            
+      </div>
+      <div class="col-lg-1">
+        
+      </div>
+  
+    </div>
+   
+    <br>
+    <br>
+    <br>
+    <% } %>
+  </div>
+</div>
+</div>
+<div id="myModal" class="modal">
+  <span class="close">&times;</span>
+  <img class="modal-content" id="img01">
+  <!--<div id="caption"></div>-->
+</div>
+</body>
+<script>
+  
+
+
+function bookMark(uri){
+  console.log(uri);
+  document.getElementById(uri).style.color = '#009cc3';
+  var xhr = new XMLHttpRequest();
+xhr.open("POST", '/home', true);
+xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+console.log(uri);
+xhr.send('uri='+uri);
+}
+
+function fun( src){
+  var modal = document.getElementById("myModal");
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var img = document.getElementById("myImg");
+var modalImg = document.getElementById("img01");
+var captionText = document.getElementById("caption");
+  modal.style.display = "block";
+  modalImg.src = src;
+  //captionText.innerHTML = this.alt;
+  var span = document.getElementsByClassName("close")[0];
+  span.onclick = function() { 
+  modal.style.display = "none";
+}
+}
+</script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</html>
