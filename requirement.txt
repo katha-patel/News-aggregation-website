@@ -6,3 +6,5 @@
     "mongodb": "^3.6.5",
     "mongoose": "^5.12.1",
     "node-summarizer": "^1.0.7",
+    "request": "^2.88.2",
+    
