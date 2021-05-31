@@ -2,8 +2,8 @@
 Bolstart wants to summarize long startups, tech, entrepreneurship related news into n number of words for the startup community.
 
 # News Source
- https://newsapi.ai/
- https://github.com/EventRegistry/event-registry-node-js
+ 1. https://newsapi.ai/
+ 2. https://github.com/EventRegistry/event-registry-node-js
 
 # Database
 
