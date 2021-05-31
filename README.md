@@ -25,3 +25,16 @@ Bolstart wants to summarize long startups, tech, entrepreneurship related news i
 
 # API
 1. eventregistry - https://www.npmjs.com/package/eventregistry
+
+# Homepage 
+1. Api general news 
+2. Categorization
+3. load more
+4. reload
+5. bookmarked by clicking on news' title
+
+# Bookmark
+
+# For you
+1. Recommend News- by content based recommendation
+2. load more
