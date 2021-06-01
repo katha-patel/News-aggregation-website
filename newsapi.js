@@ -7,9 +7,8 @@ var mongoose = require("mongoose");
 var k;
 const app =express();
 var erBase = require("eventregistry");
-//var  = require("ReturnInfo");
 var er = new erBase.EventRegistry();
-
+var path = require("path");
 const ContentBasedRecommender = require('content-based-recommender');
 
 
@@ -19,7 +18,7 @@ var urlencodedParser=bodyParser.urlencoded({extended:false});
 let SummarizerManager = require("node-summarizer").SummarizerManager;
 app.set('view engine','ejs');
 app.use(bodyParser.urlencoded({extended:true}));
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect("mongodb://localhost:27017/mydb",{ useNewUrlParser: true, useUnifiedTopology: true})
 .then (()=>console.log("Connection Successful"))
@@ -30,14 +29,9 @@ const newarticlesSchema = new mongoose.Schema({
     isDuplicate: String,
     date: String,
     time: String,
-    //dateTime: String,
-    //dateTimePub: String,
-    //dataType: String,
-    //sim: String,
+    dateTime: Date,
     url: String,
     title: String,
-    //body: String,
-
     source:{ 
 		uri: String,
         dataType: String,
@@ -49,8 +43,6 @@ const newarticlesSchema = new mongoose.Schema({
     image: String,
     eventUri: String,
     sentiment: String,
-	wgt: String,
-	relevance: String,
 	summary: String,
 	category: []
 });
@@ -63,58 +55,50 @@ const usersSchema = mongoose.model('User', {
 
 
 const Newarticle = new mongoose.model("Newarticle", newarticlesSchema);
+let updatesAfterTm;
 
 const createDocument = async () => {
    
 
-	var er = new erBase.EventRegistry({apiKey: "4a5f71cf-2c58-4677-9365-ff6777acfd2e"});
+	var er = new erBase.EventRegistry({apiKey: "6f892bf9-de4a-45d6-b253-7bdaefde640a"});
 	
-	// er.getConceptUri("Apple").then((conceptUri) => {
-	// 	const q3 = new erBase.QueryArticles({ conceptUri });
-	// 	const returnInfo = new erBase.ReturnInfo({articleInfo: new erBase.ArticleInfoFlags({socialScore: true})});
-	// 	const requestArticlesInfo = new erBase.RequestArticlesInfo({
-	// 		count: 5,
-	// 		sortBy: "socialScore",
-	// 		returnInfo: returnInfo,
-	// 	});
-	// 	q3.setRequestedResult(requestArticlesInfo);
-	// 	console.log(q3.setRequestedResult(requestArticlesInfo));
-	// 	return er.execQuery(q3);
-	// }).then(async(response) => {
-	// 	console.info(JSON.stringify(response));
-	// });
-
-	er.getCategoryUri("Business").then((categoryUri) => {
-		const iterOpts = {
-			maxItems: 100,
-			categoryUri: categoryUri,
-			returnInfo: new erBase.ReturnInfo({articleInfo: new erBase.ArticleInfoFlags({categories: true})}),
-			isDuplicateFilter: "skipDuplicates",
-		};
-		const q5 = new erBase.QueryArticlesIter(er, iterOpts);
-		q5.execQuery(async (item) => {
-			//console.info(item);
-			
-			var art = item;
-			//console.log(art);
-			
-				//console.log(art);
-				//console.log(art.categories);
-				var body=JSON.stringify(art.body);
-			 let Summary = await summ(body);
-			 //console.log(Summary);
-			 //console.log(art.categories);
-			 var category =await catego(art.categories);
-			//console.log(category);
-				//var a=JSON.stringify(k[art]);
-				var a=art;
+	const query = new erBase.QueryArticles({
+        categoryUri: await er.getCategoryUri("business"),
+        isDuplicateFilter: "skipDuplicates",
+        lang: "eng",
+        startSourceRankPercentile: 0,
+        endSourceRankPercentile: 30,
+        //returnInfo: new erBase.ReturnInfo({articleInfo: new erBase.ArticleInfoFlags({categories: true})}),
+    });
+    //const query = new erBase.QueryArticles(er);
+    const articleInfo = new erBase.ArticleInfoFlags({categories: true});
+    const returnInfo = new erBase.ReturnInfo({articleInfo});
+    //const requestArticleInfo = new erBase.RequestArticleInfo({returnInfo:returnInfo});
+    query.setRequestedResult(
+        new erBase.RequestArticlesRecentActivity({
+            maxArticleCount: 5,
+            returnInfo,
+            // consider articles that were published at most 10 minutes ago
+            updatesAfterTm,
+        })
+    );
+    const articleList = await er.execQuery(query);
+	console.log(articleList.recentActivityArticles.activity)
+    // TODO: do here whatever you need to with the articleList
+    for (const article of articleList.recentActivityArticles.activity) {
+		//console.log(article);
+		var art = article;
+		var body=art.body;
+		let Summary = await summ(body);
+		var category =await catego(art.categories);
+		var a=art;
 				var b={
 				 uri:a.uri,
 				 lang:a.lang,
 				 isDuplicate: JSON.stringify(a.isDuplicate),
 				 date: a.date,
 				 time: a.time,
-				 //dateTime: a.dateTime,
+				 dateTime: a.dateTime,
 				 //dateTimePub:a.dateTimePub,
 				 //dataType: a.dataType,
 				 //sim: JSON.stringify(a.sim),
@@ -133,25 +117,35 @@ const createDocument = async () => {
 				 image: a.image,
 				 eventUri:a.eventUri,
 				 sentiment: JSON.stringify(a.sentiment),
-				 wgt: JSON.stringify(a.wgt),
-				 relevance: JSON.stringify(a.relevance),
+				 //wgt: JSON.stringify(a.wgt),
+				 //relevance: a.relevance,
 				 summary:Summary,
 				 category: category
 				}
 				console.log(b);
-				const arti = new Newarticle(b);
-				//arti.save();
-				//console.log(result);
-				
-			 
-		});
-	});
-
+				//console.log(Summary);
+				if (Summary=="Error: Not Enough similarities to be summarized, or the sentence is invalid.")
+				{
+					console.log("Error in summary.");
+				}
+				else
+				{
+					const arti = new Newarticle(b);
+					//console.log("Yes");
+					arti.save();
+					//console.log(result);
+				}
+        //console.log(article);
+    }
+    // wait exactly a minute until next batch of new content is ready
+    await erBase.sleep(60 * 1000);
+    updatesAfterTm = articleList.recentActivityArticles.currTime;
+    createDocument();
 		
 }
 
-//createDocument();
 
+// createDocument();
 
 var category  = [];
 const catego = (e)=>{
@@ -190,58 +184,6 @@ const catego = (e)=>{
 }; 
 
 
-
-// 
-// var newstr = ""; 
-
-// for( var i = 0; i < str.length; i++ )  
-
-//     if( !(str[i] == '\n' || str[i] == '\r' ) ) 
-
-//         newstr += str[i];
-// 		newstr = newstr.replace(/"([^"]+(?="))"/g, '$1');
-// 		//console.log(newstr);
-// 			let Summarizer = new SummarizerManager(newstr,3);
-// 			//let Summary = Summarizer.getSummaryByFrequency().summary;
-
-// 			let summary = Summarizer.getSummaryByRank().then((summary_object)=>{
-// 				return summary_object.summary
-// 			});
-// 			summary.then(function(result){
-// 				console.log(result);
-// 				})
-			//console.log(summary);
-
-			// Newarticle.find({_id: "607c0b125422e927f07b3d01"},function(err,foundItems){
-			// 	//console.log(foundItems[0].body);
-			// 	var str="";
-			// 	str=str+foundItems[0].body;
-			// 	console.log(str);
-			// 	var newstr = ""; 
-
-			// 	newstr=newstr.replace( /[\r\n]+/gm, "" );
-			// 			newstr = newstr.replace(/"([^"]+(?="))"/g, '$1');
-			// 			console.log(newstr);
-			// let Summarizer = new SummarizerManager(newstr,3); 
-			// 		let summary = Summarizer.getSummaryByRank().then((summary_object)=>{
-			// 			return summary_object.summary
-			// 		});
-			// 		summary.then(function(result){
-			// 			//console.log("Summary:"+result);
-						
-			// 				var myquery = { _id: "607c0b125422e927f07b3d01" };
-			// 				var newvalues = { $set: {summary: `${result}`} };
-			// 				// Newarticle.updateMany(myquery, newvalues, function(err, res) {
-			// 				// 	if (err) throw err;
-			// 				// 	console.log("1 document updated");
-			// 				// 	//db.close();
-			// 				//   });
-							
-			// 				//response.render("list",{listitem: foundItems});
-			//  			});
-			// 		});
-
-
 			const summ = (e)=>{
 				return new Promise((resolve, reject)=>{
 					e=e.replace( /[\r\n]+/gm, "" );
@@ -264,69 +206,7 @@ const catego = (e)=>{
 							  });
 			};
 			
-			// Newarticle.find({},async function(err,foundItems){
-			// 	console.log(foundItems.length);
-			// 	for(var i=0;i<foundItems.length;i++)
-			// 	{
-			// 		//console.log(foundItems[i].body);
-			// 		var str="";
-			// 		str=str+foundItems[i].body;
-			// 		str=str.replace( /[\r\n]+/gm, "" );
-			// 		//console.log("After"+str);
-			// 		str = str.replace(/"([^"]+(?="))"/g, '$1');
-			// 		let summa = await summ(str);
-			// 		//console.log(summa);
-			// 		var f=foundItems[i].id;
-			// 		let v = await up(f,summa);
-			// 			//console.log(v);
-						
-			// 			console.log(foundItems[i].id);
-			// 	}
-			// 	});
-		
 
-	app.get("/home",function(request,response){
-		console.log("running");
-
-		Newarticle.find({},function(err,foundItems){
-			if(err)
-				console.log(err);
-			//console.log(foundItems);
-			response.render("list",{listitem: foundItems});
-		});
-
-});
-
-
-app.post("/home",async (request, response) => {
-    const data = await request.body;
-  console.log(request.body);
-  //console.log(request.body.category);
-
-  Newarticle.find({"category":{"$in" : request.body.category }}, function(err,foundItems){
-    if(err)
-      console.log(err);
-    //console.log(foundItems);
-    response.render("list",{listitem: foundItems});
-  }); 
-  if(request.body.uri)
-  {
-	
-  var myquery = { };
-  var newvalues = { $addToSet: {
-	bookmark: {
-		$each:[ request.body.uri ]
-	}
-  	}
-   };
-  usersSchema.updateMany(myquery,newvalues, function(err, res) {
-	if (err) throw err;
-	else
-	console.log("1 document updated");
-	//db.close();
-  });
-}
-});
 
 app.get("/home/bookmark",function(request,response){
 	console.log("running");
@@ -334,12 +214,10 @@ app.get("/home/bookmark",function(request,response){
 	usersSchema.find({},function(err,Items){
 		if(err)
 			console.log(err);
-		//console.log(Items[0].bookmark);
-		Newarticle.find({"uri": Items[0].bookmark },function(err,foundItems){
+		Newarticle.find({"uri": Items[0].bookmark }).sort({dateTime:'desc'}).exec(function(err,foundItems){
 			if(err)
 			  console.log(err);
-			//console.log(foundItems);
-			response.render("foryou",{listitem: foundItems});
+			response.render("bookmark",{listitem: foundItems});
 		  }); 
 	});
 
@@ -376,10 +254,7 @@ const recommender = new ContentBasedRecommender({
 	  if(err)
 		console.log(err);
 	  resolve(foundItems[0].bookmark);
-	   //console.log( foundItems);
-	
 	});
-	
 	});
 
 
@@ -387,14 +262,8 @@ const recommender = new ContentBasedRecommender({
 	const bookmrk = (f)=>{
 	 return new Promise((resolve, reject)=>{
 	   var myquery = {"uri":f };
-			   //console.log(myquery);
-   
 		Newarticle.find(myquery,function(err,Items){
 			  resolve(Items);
-   
-			 //console.log(Items);
-		   // console.log( Items[0].summary);
-			//console.log("Hii");
 	 if(err)
 	   console.log(err);
 	
@@ -410,185 +279,189 @@ const recommender = new ContentBasedRecommender({
    });
    };
 
-
-
-
-
 	
    var recom = new Set();
    function traning(arr1,arr){
 
 	var posts=arr1;
 	var tags=arr;
-	//console.log(posts);
-	//console.log(tags);
 	var set1 = [];
 	var set2 = [];
-	//console.log(posts.length);
-
 	const tagMap = tags.reduce((acc, tag) => {
 	  acc[tag.id] = tag;
 	  return acc;
 	}, {});
-
-	 
-	//const recommender = new ContentBasedRecommender();
-	 
 	recommender.trainBidirectional(posts, tags);
 	 
 	for (let post of posts) {
 	  const relatedTags = recommender.getSimilarDocuments(post.id,0,10);
 	  const tags = relatedTags.map(t => t.id);
-	  //console.log(post.content, 'related tags:', tags1);
-	  //console.log(relatedTags);
-	  //console.log(tags);
 	  set1.push(tags);
 	}
 	for(var i =0;i<set1.length;i++){
 		set2=set2.concat(set1[i]);
 	}
-	//console.log(set2.length);
 	for(var i =0;i<set2.length;i++){
 		recom.add(set2[i]);
 	}
-	//console.log(recom.size);
-	//console.log(recom);
 }
 
 
-const recomm = async () => {{
-	
-		
+const recomm = async () => {{		
 			await fnditm;
-
 		var foundItems= await all;
-
-		//console.log(foundItems);
-		
 		for(var i=0;i<foundItems.length;i++)
 		{    
 		var f=foundItems[i];
-		//console.log(k1);
 		await bookmrk(f);
 		}
-		//console.log(arr.length);
-		//console.log(arr1);
 		traning(arr1,arr);
 				
 	}
 } 
 
-
-
 app.get("/home/foryou",async function(request,response){
 	console.log("running");
     await recomm();
-	//console.log(recom);
-	// await Newarticle.find({uri:recom},function(err,foundItems){
-	// 	if(err)
-	// 	  console.log(err);
-	// 	  //console.log(foundItems);
-	// 	  //response.render("foryou",{listitem: foundItems});
-	// });
+	
 	var arr2=[]
-  //console.log(arr1);
+  
   for (var i = 0; i <arr1.length ; i++) {
     arr2.push(arr1[i].id)
   }
-  //console.log(arr2);
-	let foryu=[];
-     //var x;
+ 
+	let foryu=[],arru;
      recom.forEach(x=>foryu.push(x))
      var difference = foryu.filter(x => arr2.indexOf(x) === -1);
-     //console.log(difference);
-     
     var myquery={'uri':{$in:difference}};
-    //var myquery={'uri':{$in:foryu}};
-
-    Newarticle.find(myquery,function(err,foundItems){
+     await Newarticle.find({ $query: {}, $orderby: { dateTime : -1 } },function(err,foundItems2){
+		if(err)
+		  console.log(err);
+		arru=foundItems2;
+		
+	   }); 
+     await Newarticle.find(myquery).sort({dateTime:'desc'}).exec(function(err,foundItems){
       if(err)
         console.log(err);
-      //console.log(foundItems);
-      response.render("foryou",{listitem: foundItems});
-    });
+          //console.log(arru.length);
+		 var e=foundItems.length;
+		 for (let h =0;h<arru.length;h++)
+		 	foundItems.push(arru[h]);
+		console.log(foundItems.length);
 
+		response.render("foryou",{data: {listitem:  JSON.stringify(foundItems),category: "News"}});
+	
+      
+    });
+	//createDocument();
+
+});
+
+app.post("/home/foryou",(request, response) => {
+	if(request.body.uri)
+	{
+	  
+	var myquery = { };
+	var newvalues = { $addToSet: {
+	  bookmark: {
+		  $each:[ request.body.uri ]
+	  }
+		}
+	 };
+	usersSchema.updateMany(myquery,newvalues, function(err, res) {
+	  if (err) throw err;
+	  else
+	  console.log("1 document updated");
+	});
+  }
+});
+
+app.get("/home",async function(request,response){
+	//console.log("running");
+	Newarticle.find({}).sort({dateTime:'desc'}).exec(function(err,foundItems){
+		if(err)
+		  console.log(err);
+		//console.log(foundItems);
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "News"}});
+	  }); 
+	 // createDocument();
 });
 
 app.get("/home/Small_Business",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Small_Business' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Small_Business' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Small Business"}});
 	  }); 
 });
 app.get("/home/Financial_Services",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Financial_Services' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Financial_Services' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Financial Services"}});
 	  }); 
 });
 app.get("/home/Marketing_and_Advertising",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Marketing_and_Advertising' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Marketing_and_Advertising' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Marketing and Advertising"}});
 	  }); 
 });
 
 app.get("/home/Agriculture_and_Forestry",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Agriculture_and_Forestry' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Agriculture_and_Forestry' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Agriculture and Forestry"}});
 	  }); 
 });
 
 app.get("/home/Investing",async function(request,response){
 	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Investing' }}, function(err,foundItems){
+	Newarticle.find({"category":{"$in" : 'Investing' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Investing"}});
 	  }); 
 });
 
 app.get("/home/Business_Services",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Business_Services' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Business_Services' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Business Services"}});
 	  }); 
 });
 
 app.get("/home/Aerospace_and_Defense",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Aerospace_and_Defense' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Aerospace_and_Defense' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Aerospace and Defense"}});
 	  }); 
 });
 
 app.get("/home/Human_Resources",async function(request,response){
-	console.log("running");
-	Newarticle.find({"category":{"$in" : 'Human_Resources' }}, function(err,foundItems){
+	//console.log("running");
+	Newarticle.find({"category":{"$in" : 'Human_Resources' }}).sort({dateTime:'desc'}).exec(function(err,foundItems){
 		if(err)
 		  console.log(err);
 		//console.log(foundItems);
-		response.render("foryou",{listitem: foundItems});
+		response.render("list",{data: {listitem: JSON.stringify(foundItems), category: "Human Resources"}});
 	  }); 
 });
 

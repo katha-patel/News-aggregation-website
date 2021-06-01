@@ -1,8 +1,9 @@
 <html>
 <head>
 	<title>Power Read</title>
-
+  <link rel="icon" href="/images/bolstart-favicon.png" type="image/icon type">
   <meta charset="utf-8">
+  
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
@@ -158,7 +159,7 @@ a:focus {
   position: sticky;
     min-width: 250px;
     max-width: 250px;
-    background: #293266;
+    background: #009cc3;
     color: #F4F7F9;
     transition: all 0.3s;
     
@@ -170,12 +171,12 @@ a:focus {
 
 #sidebar .sidebar-header {
     padding: 20px;
-    background: #293266;
+    background: #009cc3;
 }
 
 #sidebar ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid #293266;
+    border-bottom: 1px solid #009cc3;
 }
 
 #sidebar ul p {
@@ -190,14 +191,14 @@ a:focus {
 }
 
 #sidebar ul li a:hover {
-    color: #293266;
+    color: #009cc3;
     background: #F4F7F9;
 }
 
 #sidebar ul li.active>a,
 a[aria-expanded="true"] {
-    color: #F4F7F9;
-    background: #293266;
+  color:  #009cc3;
+    background: #F4F7F9;
 }
 
 a[data-toggle="collapse"] {
@@ -215,7 +216,7 @@ a[data-toggle="collapse"] {
 ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;
-    background: #293266;
+    background: #009cc3;
 }
 
 
@@ -333,43 +334,45 @@ ul ul a {
     
     <nav id="sidebar">
       <div class="sidebar-header">
-          <h3>Bolstart</h3>
+        <a href="https://bolstart.com/"><img src="/images/Bolstart-blue.png" style="max-width:77%;height:auto;" alt=""></a> 
       </div>
 
       <ul class="list-unstyled components">
-          <p>Power Read</p>
-          
-          
+        <li id="Power Read" class="">
+          <a href="/home" id="Power Read">Power Read</a>
+      </li>
           <li>
             
             <a href="/home/bookmark">Bookmark</a>
         </li>
-          <li>
+          <li id="News" class="active">
               <a href="/home/foryou">For You</a>
           </li>
-          <li>
-              <a href="/home/Small_Business">Small Business</a>
+          <br>
+          <p style="background-color: #293266">Categories</p>
+          <li id="Small Business" class="">
+              <a href="/home/Small_Business" style="font-size: medium;">Small Business</a>
           </li>
-          <li>
-            <a href="/home/Financial_Services">Finance Services</a>
+          <li id="Financial Services" class="">
+            <a href="/home/Financial_Services" style="font-size: medium;" >Financial Services</a>
         </li>
-        <li>
-          <a href="/home/Marketing_and_Advertising">Marketing and Advertising</a>
+        <li id="Marketing and Advertising" class="">
+          <a href="/home/Marketing_and_Advertising" style="font-size: medium;" >Marketing and Advertising</a>
       </li>
-          <li>
-            <a href="/home/Agriculture_and_Forestry">Agriculture and Forestry</a>
+          <li id="Agriculture and Forestry" class="">
+            <a href="/home/Agriculture_and_Forestry" style="font-size: medium;" >Agriculture and Forestry</a>
         </li>
-        <li>
-          <a href="/home/Investing">Investing</a>
+        <li id="Investing" class="">
+          <a href="/home/Investing" style="font-size: medium;" id="Investing">Investing</a>
       </li>
-      <li>
-        <a href="/home/Business_Services">Business Services</a>
+      <li id="Business Services" class="">
+        <a href="/home/Business_Services" style="font-size: medium;" id="Business Services">Business Services</a>
     </li>
-    <li>
-      <a href="/home/Aerospace_and_Defense">Aerospace and Defense</a>
+    <li id="Aerospace and Defense" class="">
+      <a href="/home/Aerospace_and_Defense" style="font-size: medium;" id="Aerospace and Defens">Aerospace and Defense</a>
   </li>
-  <li>
-    <a href="/home/Human_Resources">Human Resources</a>
+  <li id="Human Resources" class="">
+    <a href="/home/Human_Resources" style="font-size: medium;" id="Human Resources">Human Resources</a>
 </li>
       </ul>
 
@@ -380,79 +383,62 @@ ul ul a {
   
      
     
-  <div class="container">
+  <script>
+    var cato="<%- data.category %>";
+    if(cato!="News")
+    {
+      document.getElementById("<%- data.category %>").className = "active";
+      document.getElementById("News").className = "";
+    }
+    
+    //console.log("<%- data.category %>");
+    var list=[] ; list = <%- data.listitem %>;
+    window.onload = function() {
+      loadData(list);
+  }
+  </script>
   
-    <br>
-    <br>
-      <% for( let i=0; i<listitem.length;i++){ %>
-      <div class="row">
-       
-        <div class="col-lg-1">
-        </div>
-        <div class="col-lg-10">
+  <div class="container">
+    
+
+  <center>
+   <h3 id="heading" style="color: #293266;"><b></b></h3>
+   
+    </center>
+
+  
+    <div class="row">
          
-    
-          <div class="card lg-3 cardCollapsible">
-            <div  class="paragraphStyling">
-            
-            <h4 onclick="bookMark(<%=listitem[i].uri%>);" style="padding: 10px 36px 10px 36px;" id="<%= listitem[i].uri %>"><b><%= listitem[i].title %></b></h4>
-            <div class="row g-0" >
-              <div class="col-lg-5 " style="padding: 0px 36px 0px 36px;" >
-                  <br>
-                  <img onclick="fun('<%= listitem[i].image %>')" id="myImg" src="<%= listitem[i].image %>" alt="img" onerror="if (this.src != 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg') this.src = 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg';" >
-              </div>
-    
-    
-    <div class="col-lg-7" style="max-width: 540px; " style="padding: 0px  36px 0px 36px;">
-                <div class="card-body">
-                 <!-- <h4 class="card-title"><b><%= listitem[i].title %></b></h4> -->
-                  <p class="card-text text-muted"><small class="text-muted"><%= listitem[i].time %> | <%= listitem[i].date %></small></p>
-                  <p class="card-text"  id="<%= listitem[i].uri %>https"><%= listitem[i].summary %></p>
-                  <script> var k= "<%= listitem[i].summary %>";
-                    truncateText( 60,<%=listitem[i].uri%>, k) 
-                    function truncateText( maxLength,id,text) {
-                        //var element = document.getElementById(id),
-                            truncated = text;
-                            console.log(truncated)
-                        
-                            str = truncated.split(" ").splice(0,maxLength).join(" ");
-                            document.getElementById(id+"https").innerHTML=str+'...<a href="<%= listitem[i].url %>" target="_blank">Read More</a>';
-                          
-                      // return str;
-                    }
-                    </script>
-                   
-                 
-                </div>
-              </div>
-            </div>
-    
-    
-             <div class="card-read-more">
-                                    <a href="<%= listitem[i].url %>" target="_blank" class="btn-link  cen">
-                                        READ MORE
-                                    </a>
-            </div>
-    
-           
-             
-            
-          </div>
-    
-    
-          </div>
-              
-        </div>
-        <div class="col-lg-1">
-          
-        </div>
-    
+      <div class="col-lg-1">
       </div>
-     
+      <div class="col-lg-10">  
+        
+              <div id='items' class='items'></div>
+            
+    
+    <template id='template'>
       <br>
-      <br>
-      <br>
-      <% } %>
+      
+      <div class="card lg-3 cardCollapsible">
+        <div  class="paragraphStyling">
+          
+      <div class="item-title">{{title}}</div>
+    </div>
+  </div>
+  <br>
+    </template>
+   
+   
+  
+  
+  <div> <button type="" class="btn" onclick='loadData( list );' >Load more</button></div>
+  </div>
+  <div class="col-lg-1">
+    
+  </div>
+  
+  </div>
+       
     </div>
 
 </div>
@@ -471,7 +457,7 @@ function bookMark(uri){
   console.log(uri);
   document.getElementById(uri).style.color = '#009cc3';
   var xhr = new XMLHttpRequest();
-xhr.open("POST", '/home', true);
+xhr.open("POST", '/home/foryou', true);
 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 console.log(uri);
 xhr.send('uri='+uri);
@@ -486,12 +472,76 @@ var modalImg = document.getElementById("img01");
 var captionText = document.getElementById("caption");
   modal.style.display = "block";
   modalImg.src = src;
-  //captionText.innerHTML = this.alt;
+  //captionText.innerHTML = 'hello';
   var span = document.getElementsByClassName("close")[0];
   span.onclick = function() { 
   modal.style.display = "none";
 }
 }
+
+function truncateText( maxLength,id,text) {
+                        //var element = document.getElementById(id),
+                            truncated = text;
+                            console.log(truncated)
+                        
+                            str = truncated.split(" ").splice(0,maxLength).join(" ");
+                            str=str+"..."
+                            return str;
+                          
+                      // return str;
+ }
+
+var cnt=0
+function loadData(listitem){
+   //console.log(listitem);
+  let template = document.getElementById('template');
+  //JSON.stringify
+  var list=JSON.stringify(listitem);
+  console.log(listitem.length);
+
+  for( let i=cnt; i<(cnt+10);i++)
+{
+  listitem[i].summary=truncateText( 60,listitem[i].uri, listitem[i].summary); 
+  //console.log(listitem[i].title);
+  let div = document.createElement('div');
+  div.className = 'item';
+  let tab = `
+  <h4 onclick="bookMark(${listitem[i].uri});" style="padding: 10px 36px 10px 36px;" id="${listitem[i].uri}"><b>${listitem[i].title}</b></h4>
+            <div class="row g-0" >
+              <div class="col-lg-5 " style="padding: 0px 36px 0px 36px;" >
+                  <br>
+                  <figure>
+                  <img onclick="fun('${listitem[i].image}')" id="myImg" src="${ listitem[i].image }" alt="img" onerror="if (this.src != 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg') this.src = 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg';" >
+                  <figcaption><small style="color: #293266;">&ensp; News by <u><a href="https://${listitem[i].source.uri}" target="_blank"> ${listitem[i].source.title}</a></u></small></figcaption>
+                </figure>
+              </div>
+    
+    
+    <div class="col-lg-7" style="max-width: 540px; " style="padding: 0px  36px 0px 36px;">
+                <div class="card-body">
+                
+                  <p class="card-text text-muted"><small class="text-muted">${ listitem[i].time } | ${ listitem[i].date }</small></p>
+                  <p class="card-text"  id="${ listitem[i].uri}https" onload="truncateText(60,${listitem[i].uri},${listitem[i].summary})">${ listitem[i].summary }</p>
+                    
+                        
+                </div>
+              </div>
+            </div>
+    
+    
+             <div class="card-read-more">
+                                    <a href="${ listitem[i].url }" target="_blank" class="btn-link  cen">
+                                        READ MORE
+                                    </a>
+            </div>
+  `
+  div.innerHTML = template.innerHTML.replace('{{title}}', tab);
+  document.getElementById('items').appendChild(div);
+  }
+  cnt=cnt+10;
+}
+ 
+  
 
 </script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

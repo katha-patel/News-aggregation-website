@@ -1,8 +1,9 @@
 <html>
 <head>
 	<title>Power Read</title>
-
+  <link rel="icon" href="/images/bolstart-favicon.png" type="image/icon type">
   <meta charset="utf-8">
+  
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap CSS -->
@@ -159,7 +160,7 @@ a:focus {
   position: sticky;
     min-width: 250px;
     max-width: 250px;
-    background: #293266;
+    background: #009cc3;
     color: #F4F7F9;
     transition: all 0.3s;
     
@@ -171,12 +172,12 @@ a:focus {
 
 #sidebar .sidebar-header {
     padding: 20px;
-    background: #293266;
+    background: #009cc3;
 }
 
 #sidebar ul.components {
     padding: 20px 0;
-    border-bottom: 1px solid #293266;
+    border-bottom: 1px solid #009cc3;
 }
 
 #sidebar ul p {
@@ -191,14 +192,14 @@ a:focus {
 }
 
 #sidebar ul li a:hover {
-    color: #293266;
+    color: #009cc3;
     background: #F4F7F9;
 }
 
 #sidebar ul li.active>a,
 a[aria-expanded="true"] {
-    color: #F4F7F9;
-    background: #293266;
+    color:  #009cc3;
+    background: #F4F7F9;
 }
 
 a[data-toggle="collapse"] {
@@ -216,7 +217,7 @@ a[data-toggle="collapse"] {
 ul ul a {
     font-size: 0.9em !important;
     padding-left: 30px !important;
-    background: #293266;
+    background: #009cc3;
 }
 
 
@@ -334,31 +335,66 @@ ul ul a {
     
     <nav id="sidebar">
       <div class="sidebar-header">
-          <h3>Bolstart</h3>
+        <img src="/images/Bolstart-blue.png" style="max-width:77%;height:auto;" alt="">
       </div>
 
       <ul class="list-unstyled components">
-          <p>Power Read</p>
-          
-          
-          
-          <li>
-              <a href="/home/foryou">For You</a>
-          </li>
+        <li id="Power Read" class="">
+          <a href="/home" id="Power Read">Power Read</a>
+      </li>
           <li class="active">
-              <a href="/home/bookmark">Bookmark</a>
-          </li>
-          
+            <a href="/home/bookmark">Bookmark</a>
+        </li>
+          <li>
+            <a href="/home/foryou">For You</a>
+        </li>
+        <br>
+        <p style="background-color: #293266">Categories</p>
+        <li>
+            <a href="/home/Small_Business" style="font-size: medium;">Small Business</a>
+        </li>
+        <li>
+          <a href="/home/Financial_Services" style="font-size: medium;">Financial Services</a>
+      </li>
+      <li>
+        <a href="/home/Marketing_and_Advertising" style="font-size: medium;">Marketing and Advertising</a>
+    </li>
+        <li>
+          <a href="/home/Agriculture_and_Forestry" style="font-size: medium;">Agriculture and Forestry</a>
+      </li>
+      <li>
+        <a href="/home/Investing" style="font-size: medium;">Investing</a>
+    </li>
+    <li>
+      <a href="/home/Business_Services" style="font-size: medium;">Business Services</a>
+  </li>
+  <li>
+    <a href="/home/Aerospace_and_Defense" style="font-size: medium;">Aerospace and Defense</a>
+</li>
+<li>
+  <a href="/home/Human_Resources" style="font-size: medium;">Human Resources</a>
+</li>
       </ul>
 
      
   </nav>
-
-
+  
+  
   
   <div class="container">
-  
-    <br>
+    <center>
+      <div id="vis"></div>
+    </center>
+    <script>
+      var list=[]; 
+      list = "<%- listitem %>";
+      if(list.length==0)
+      {
+        document.getElementById('vis').innerHTML = `<h5>You haven't saved any news so far.<br>
+          To bookmark, click on title of any news<br></h5>
+         <u> <a href="/home" style="color:#293266;"> Click here to read</a></u>`;
+      }
+    </script>
     <br>
       <% for( let i=0; i<listitem.length;i++){ %>
       <div class="row">
@@ -371,11 +407,14 @@ ul ul a {
           <div class="card lg-3 cardCollapsible">
             <div  class="paragraphStyling">
             
-            <h4 onclick="bookMark(<%=listitem[i].uri%>);" style="padding: 10px 36px 10px 36px;" id="<%= listitem[i].uri %>"><b><%= listitem[i].title %></b></h4>
+            <h4  style="padding: 10px 36px 10px 36px; color: #009cc3;" id="<%= listitem[i].uri %>"><b><%= listitem[i].title %></b></h4>
             <div class="row g-0" >
               <div class="col-lg-5 " style="padding: 0px 36px 0px 36px;" >
                   <br>
-                  <img onclick="fun('<%= listitem[i].image %>')" id="myImg" src="<%= listitem[i].image %>" alt="img" onerror="if (this.src != 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg') this.src = 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg';" >
+                 <figure>
+                    <img onclick="fun('<%= listitem[i].image %>')" id="myImg" src="<%= listitem[i].image %>" alt="img" onerror="if (this.src != 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg') this.src = 'https://www.level10martialarts.com/wp-content/uploads/2017/04/default-image-620x600.jpg';" >
+                    <figcaption><small style="color: #293266;">&ensp; News by <u><a href="https://<%-listitem[i].source.uri%>" target="_blank"> <%-listitem[i].source.title%></a></u></small></figcaption>
+                  </figure>
               </div>
     
     
@@ -392,7 +431,7 @@ ul ul a {
                             console.log(truncated)
                         
                             str = truncated.split(" ").splice(0,maxLength).join(" ");
-                            document.getElementById(id+"https").innerHTML=str+'...<a href="<%= listitem[i].url %>" target="_blank">Read More</a>';
+                            document.getElementById(id+"https").innerHTML=str+'...';
                           
                       // return str;
                     }
